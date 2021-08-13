@@ -2,10 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const portfolioSchema = new Schema({
-  //   userId: {
-  //     type: String,
-  //     required: true,
-  //   },
+
   share1: {
     type: Number,
     required: true,
@@ -38,6 +35,14 @@ const portfolioSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
+  totalReturn: {
+    type: Number,
+    required: true,
+  },
+  rateOfReturn: {
+    type: String,
+    required: true,
+  }
 
 });
 

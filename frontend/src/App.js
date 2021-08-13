@@ -28,6 +28,10 @@ function App() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [totalReturn, setTotalReturn] = useState()
+  const [rateOfReturn, setRateOfReturn] = useState()
+  const [secondModalOpen, setSecondModalOpen] = useState(false);
+  const [lastReturn, setLastReturn] = useState()
+  const [lastRateOfReturn, setLastRateOfReturn] = useState()
   const handleShareChange = ({ target }) => {
     setShare(target.value);
   };
@@ -55,11 +59,14 @@ function App() {
   const handleThirdStockCodeChange = ({ target }) => {
     setThirdStockCode(target.value);
   };
-
-
   const handleClose = () => {
     setModalOpen(false);
   };
+  const handleSecondModalClose = () => {
+    setSecondModalOpen(false);
+  };
+
+
   function formatDate(date) {
     var d = new Date(date),
       month = '' + (d.getMonth() + 1),
@@ -73,13 +80,27 @@ function App() {
 
     return [year, month, day].join('-');
   }
+
+  const getLastPortfolio = async (e) => {
+    const url = "/send-portfolio";
+    const response = await axios.get(url);
+    console.log(response)
+    setLastReturn(response.data.lastPortfolio.totalReturn)
+    setLastRateOfReturn(response.data.lastPortfolio.rateOfReturn)
+    setSecondModalOpen(true)
+
+
+  };
   const sendPortfolio = async (e) => {
     //e.preventDefault();
-
     const portfolio = {
-
-      stockCode: stockCode,
-      share: Number(share),
+      // stockInfo:[
+      //   {stockCode:stockCode,share: Number(share)},
+      //   {stockCode:secondStockCode,share:Number(secondShare)},
+      //   {stockCode:thirdStockCode,share: Number(thirdShare)}
+      // ],
+      stockCode1: stockCode,
+      share1: Number(share),
       stockCode2: secondStockCode,
       share2: Number(secondShare),
       stockCode3: thirdStockCode,
@@ -91,6 +112,7 @@ function App() {
     const url = "/send-portfolio";
     const response = await axios.post(url, portfolio);
     setTotalReturn(response.data.totalReturn)
+    setRateOfReturn(response.data.rateOfReturn)
     setModalOpen(true)
 
 
@@ -158,9 +180,6 @@ function App() {
             />
           </div>
 
-
-
-
         </div>
 
 
@@ -202,13 +221,29 @@ function App() {
       <div>
         <Button variant="contained" color="primary" onClick={sendPortfolio}>Submit</Button>
       </div>
+      <div>
+        <Button variant="contained" color="primary" onClick={getLastPortfolio}>Show Last Portfolio</Button>
+      </div>
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={modalOpen}>
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Total Return and Rate of Return:
+          Finance Statistics
         </DialogTitle>
         <DialogContent dividers>
           <Typography >
-            $599 and {totalReturn}
+            <h3>Total Return :  {totalReturn}</h3>
+            <h3>Rate of Return: {rateOfReturn}</h3>
+          </Typography>
+        </DialogContent>
+
+      </Dialog>
+      <Dialog onClose={handleSecondModalClose} aria-labelledby="customized-dialog-title" open={secondModalOpen}>
+        <DialogTitle id="customized-dialog-title" onClose={handleSecondModalClose}>
+          Last Portfolio Statistics
+        </DialogTitle>
+        <DialogContent dividers>
+          <Typography >
+            <h3>Total Return :  {lastReturn}</h3>
+            <h3>Rate of Return: {lastRateOfReturn}</h3>
           </Typography>
         </DialogContent>
 
