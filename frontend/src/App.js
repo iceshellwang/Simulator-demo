@@ -10,6 +10,7 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 import axios from "axios";
+import { Dialog, Typography, DialogTitle, DialogContent } from '@material-ui/core';
 
 function App() {
 
@@ -25,8 +26,8 @@ function App() {
   const [thirdStockCode, setThirdStockCode] = useState("");
   const [thirdShare, setThirdShare] = useState();
 
-
-
+  const [modalOpen, setModalOpen] = useState(false);
+  const [totalReturn, setTotalReturn] = useState()
   const handleShareChange = ({ target }) => {
     setShare(target.value);
   };
@@ -54,37 +55,45 @@ function App() {
   const handleThirdStockCodeChange = ({ target }) => {
     setThirdStockCode(target.value);
   };
-  const sendPortfolio = async (e) => {
-    e.preventDefault();
 
-    // const headers = {
-    //   "x-auth-token": userData.token,
-    // };
+
+  const handleClose = () => {
+    setModalOpen(false);
+  };
+  function formatDate(date) {
+    var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
+
+    return [year, month, day].join('-');
+  }
+  const sendPortfolio = async (e) => {
+    //e.preventDefault();
 
     const portfolio = {
-      //userId: userData.user.id,
+
       stockCode: stockCode,
       share: Number(share),
       stockCode2: secondStockCode,
       share2: Number(secondShare),
       stockCode3: thirdStockCode,
       share3: Number(thirdShare),
-      startDate: startDate,
-      endDate: endDate
+      startDate: formatDate(startDate),
+      endDate: formatDate(endDate)
     };
 
-    const url = "/api/send-portfolio";
-    const response = await axios.post(url, portfolio,
-      //   {
-      //   headers,
-      // }
-    );
+    const url = "/send-portfolio";
+    const response = await axios.post(url, portfolio);
+    setTotalReturn(response.data.totalReturn)
+    setModalOpen(true)
 
-    if (response.data.status === "success") {
-      alert('save this portfolio successfully')
-    } else {
-      alert("Couldn't save this portfolio.");
-    }
+
   };
 
   return (
@@ -193,6 +202,17 @@ function App() {
       <div>
         <Button variant="contained" color="primary" onClick={sendPortfolio}>Submit</Button>
       </div>
+      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={modalOpen}>
+        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+          Total Return and Rate of Return:
+        </DialogTitle>
+        <DialogContent dividers>
+          <Typography >
+            $599 and {totalReturn}
+          </Typography>
+        </DialogContent>
+
+      </Dialog>
     </div>
   );
 }

@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 // const auth = require("../controllers/authMiddleware");
-const { sendPortfolio } = require("../controller");
+const { sendPortfolio } = require("../server/controller");
 
-router.route("/send-portfolio").post(sendPortfolio);
+router.route("/").post(sendPortfolio);
 
 
 module.exports = router;

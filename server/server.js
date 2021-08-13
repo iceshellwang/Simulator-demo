@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-//const Portfolio = require("../portfolioModel");
+
 
 
 // // SETUP
@@ -10,14 +10,14 @@ dotenv.config({ path: "./server/.env" });
 
 const app = express();
 const port = process.env.PORT || 5000;
-//const portfolioRouter = require("./portfolioRoutes");
+const portfolioRouter = require("../server/portfolioRoutes");
 
 app.use(cors());
-// app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser("secretcode"));
-//app.use("/api/send-portfolio", portfolioRouter);
-const yahooFinance = require('yahoo-finance');
+app.use("/send-portfolio", portfolioRouter);
+
 // // DATABASE
 const uri = process.env.ATLAS_URI;
 
@@ -34,20 +34,19 @@ connection.once('open', () => {
 })
 
 
-// app.get('/', (req, res) => {
-//   const result = await yahooFinance.quote('TSLA');
-//   res.json(result)
-// })
-// app.post("/addname", (req, res) => {
-//   var myData = new Portfolio(req.body);
-//   myData.save()
-//     .then(item => {
-//       res.send("item saved to database");
-//     })
-//     .catch(err => {
-//       res.status(400).send("unable to save to database");
-//     });
-// });
+// app.get('/', async (req, res) => {
+//   try {
+//     const result = await yahooFinance.quote('TSLA');
+//     res.send(result)
+//   }
+//   catch (error) {
+//     return res.send(error)
+//   }
+// }
+// )
+
+
+
 // // ROUTES
 // const authRouter = require("./routes/authRoutes");
 // const dataRouter = require("./routes/dataRoutes");
