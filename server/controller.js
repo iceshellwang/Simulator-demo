@@ -57,7 +57,10 @@ exports.sendPortfolio = async (req, res) => {
 
   catch (error) {
     console.log(error)
-    return res.send(error)
+    return res.status(200).json({
+      status: "fail",
+      message: "Something unexpected happened.",
+    });
   }
 
 }

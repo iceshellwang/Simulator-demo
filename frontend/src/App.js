@@ -4,7 +4,9 @@ import TextField from '@material-ui/core/TextField';
 import Container from '@material-ui/core/Container';
 import DateFnsUtils from '@date-io/date-fns';
 import Button from '@material-ui/core/Button';
+import Spinner from './Spinner'
 import 'date-fns';
+import Alert from '@material-ui/lab/Alert';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -32,6 +34,8 @@ function App() {
   const [secondModalOpen, setSecondModalOpen] = useState(false);
   const [lastReturn, setLastReturn] = useState()
   const [lastRateOfReturn, setLastRateOfReturn] = useState()
+  const [spinner, setSpinner] = useState(false);
+  const [alert, setAlert] = useState(false);
   const handleShareChange = ({ target }) => {
     setShare(target.value);
   };
@@ -82,17 +86,28 @@ function App() {
   }
 
   const getLastPortfolio = async (e) => {
+    setAlert(false)
+    setSpinner(true)
     const url = "/send-portfolio";
     const response = await axios.get(url);
     console.log(response)
-    setLastReturn(response.data.lastPortfolio.totalReturn)
-    setLastRateOfReturn(response.data.lastPortfolio.rateOfReturn)
-    setSecondModalOpen(true)
+    if (response.data.status === "success") {
+      setLastReturn(response.data.lastPortfolio.totalReturn)
+      setLastRateOfReturn(response.data.lastPortfolio.rateOfReturn)
+      setSecondModalOpen(true)
+      setSpinner(false)
+    }
+    else {
+      setAlert(true)
+      setSpinner(false)
+    }
 
 
   };
   const sendPortfolio = async (e) => {
     //e.preventDefault();
+
+    setSpinner(true)
     const portfolio = {
       // stockInfo:[
       //   {stockCode:stockCode,share: Number(share)},
@@ -111,9 +126,16 @@ function App() {
 
     const url = "/send-portfolio";
     const response = await axios.post(url, portfolio);
-    setTotalReturn(response.data.totalReturn)
-    setRateOfReturn(response.data.rateOfReturn)
-    setModalOpen(true)
+    if (response.data.status === "success") {
+      setTotalReturn(response.data.totalReturn)
+      setRateOfReturn(response.data.rateOfReturn)
+      setModalOpen(true)
+      setSpinner(false)
+    }
+    else {
+      setAlert(true)
+      setSpinner(false)
+    }
 
 
   };
@@ -123,12 +145,13 @@ function App() {
       <AppBar position="static" >
         <main><h1 style={{ textAlign: 'center' }}>Stock Trading Simulator</h1></main>
       </AppBar>
-      <div style={{ margin: '60px', display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', }}>
+      {alert && <Alert severity="error">Please enter valid stock code or share or refresh this page</Alert>}
+      <div style={{ margin: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ marginRight: '20px' }}>
           <div >
             <TextField id="filled-basic" label="Stock Code" Value={stockCode} onChange={handleStockCodeChange} />
           </div>
-          <div >
+          <div style={{ paddingTop: '32px' }}>
             <TextField
               id="standard-number"
               label="Share Number"
@@ -144,11 +167,11 @@ function App() {
 
         </div>
         {/* second stock selection  */}
-        <div>
+        <div style={{ marginRight: '20px' }}>
           <div >
             <TextField id="filled-basic" label="Stock Code" Value={secondStockCode} onChange={handleSecondStockCodeChange} />
           </div>
-          <div >
+          <div style={{ paddingTop: '32px' }}>
             <TextField
               id="standard-number"
               label="Share Number"
@@ -163,11 +186,11 @@ function App() {
 
         </div>
         {/* third stock selection  */}
-        <div>
+        <div style={{ marginRight: '20px' }}>
           <div >
             <TextField id="filled-basic" label="Stock Code" Value={thirdStockCode} onChange={handleThirdStockCodeChange} />
           </div>
-          <div >
+          <div style={{ paddingTop: '32px' }} >
             <TextField
               id="standard-number"
               label="Share Number"
@@ -181,12 +204,8 @@ function App() {
           </div>
 
         </div>
-
-
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <div >
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <MuiPickersUtilsProvider utils={DateFnsUtils} >
             <KeyboardDatePicker
               disableToolbar
               variant="inline"
@@ -200,7 +219,7 @@ function App() {
                 'aria-label': 'change date',
               }}
             />
-            <div>
+            <div style={{ marginTop: '5px' }}>
               <KeyboardDatePicker
                 disableToolbar
                 variant="inline"
@@ -213,40 +232,47 @@ function App() {
                 KeyboardButtonProps={{
                   'aria-label': 'change date',
                 }}
-              /></div>
+              />
+            </div>
           </MuiPickersUtilsProvider >
         </div>
+      </div>
 
+      {spinner && <Spinner />}
+      <div style={{ margin: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ marginRight: '150px' }}>
+          <Button variant="contained" color="primary" onClick={sendPortfolio}>Submit</Button>
+        </div>
+        <div>
+          <Button variant="contained" color="primary" onClick={getLastPortfolio}>Show Last Portfolio</Button>
+        </div>
       </div>
-      <div>
-        <Button variant="contained" color="primary" onClick={sendPortfolio}>Submit</Button>
-      </div>
-      <div>
-        <Button variant="contained" color="primary" onClick={getLastPortfolio}>Show Last Portfolio</Button>
-      </div>
+
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={modalOpen}>
-        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Finance Statistics
-        </DialogTitle>
-        <DialogContent dividers>
-          <Typography >
-            <h3>Total Return :  {totalReturn}</h3>
-            <h3>Rate of Return: {rateOfReturn}</h3>
-          </Typography>
-        </DialogContent>
-
+        <div style={{ width: '400px', textAlign: 'center', }}>
+          <DialogTitle onClose={handleClose}>
+            <h3>Return Statistics</h3>
+          </DialogTitle>
+          <DialogContent dividers>
+            <Typography >
+              <h3>Total Return :  {totalReturn}</h3>
+              <h3>Rate of Return: {rateOfReturn}</h3>
+            </Typography>
+          </DialogContent>
+        </div>
       </Dialog>
       <Dialog onClose={handleSecondModalClose} aria-labelledby="customized-dialog-title" open={secondModalOpen}>
-        <DialogTitle id="customized-dialog-title" onClose={handleSecondModalClose}>
-          Last Portfolio Statistics
-        </DialogTitle>
-        <DialogContent dividers>
-          <Typography >
-            <h3>Total Return :  {lastReturn}</h3>
-            <h3>Rate of Return: {lastRateOfReturn}</h3>
-          </Typography>
-        </DialogContent>
-
+        <div style={{ width: '400px', textAlign: 'center', }}>
+          <DialogTitle onClose={handleSecondModalClose} >
+            <h3>Last Portfolio Statistics</h3>
+          </DialogTitle>
+          <DialogContent dividers>
+            <Typography >
+              <h3>Total Return :{lastReturn}</h3>
+              <h3>Rate of Return:{lastRateOfReturn}</h3>
+            </Typography>
+          </DialogContent>
+        </div>
       </Dialog>
     </div>
   );

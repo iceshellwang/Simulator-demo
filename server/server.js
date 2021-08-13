@@ -34,30 +34,6 @@ connection.once('open', () => {
 })
 
 
-// app.get('/', async (req, res) => {
-//   try {
-//     const result = await yahooFinance.quote('TSLA');
-//     res.send(result)
-//   }
-//   catch (error) {
-//     return res.send(error)
-//   }
-// }
-// )
-
-
-
-// // ROUTES
-// const authRouter = require("./routes/authRoutes");
-// const dataRouter = require("./routes/dataRoutes");
-// const newsRouter = require("./routes/newsRoutes");
-// const stockRouter = require("./routes/stockRoutes");
-
-// app.use("/api/auth", authRouter);
-// app.use("/api/data", dataRouter);
-// app.use("/api/news", newsRouter);
-// app.use("/api/stock", stockRouter);
-
 // if (process.env.NODE_ENV === "production") {
 //     app.use(express.static("client/build"));
 
