@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import AppBar from '@material-ui/core/AppBar';
 import TextField from '@material-ui/core/TextField';
-import Container from '@material-ui/core/Container';
 import DateFnsUtils from '@date-io/date-fns';
 import Button from '@material-ui/core/Button';
 import Spinner from './Spinner'
@@ -109,11 +108,7 @@ function App() {
 
     setSpinner(true)
     const portfolio = {
-      // stockInfo:[
-      //   {stockCode:stockCode,share: Number(share)},
-      //   {stockCode:secondStockCode,share:Number(secondShare)},
-      //   {stockCode:thirdStockCode,share: Number(thirdShare)}
-      // ],
+
       stockCode1: stockCode,
       share1: Number(share),
       stockCode2: secondStockCode,
