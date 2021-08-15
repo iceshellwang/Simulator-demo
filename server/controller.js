@@ -56,12 +56,8 @@ exports.sendPortfolio = async (req, res) => {
   }
 
   catch (error) {
-    console.log(error)
-    return res.status(400).json({
-      status: "fail",
-      message: "Something unexpected happened.",
-      error: error
-    });
+
+    console.error(err);
   }
 
 }
@@ -80,11 +76,7 @@ exports.getLastPortfolio = async (req, res) => {
       lastPortfolio: lastPortfolio[0],
     });
   } catch (error) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Something unexpected happened.",
-      error: error
-    });
+    console.error(err);
   }
 };
 
